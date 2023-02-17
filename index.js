@@ -24,6 +24,13 @@ app.use((err, req, res, next) => {
     res.status(status).send(err.message);
 })
 
+// End point for user registration
+app.post('/users', (req, res) => {
+    //
+    res.status(201).send('User registered');
+
+})
+
 app.listen(port, () => {
     console.log(`App running. Docs at http://localhost:${port}/docs`);
 })
