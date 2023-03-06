@@ -15,56 +15,72 @@
     <title>Hello, world!</title>
 </head>
 <body>
-<div class="container">
-    <!-- Button trigger modal -->
-    <a class="" data-bs-toggle="modal" data-bs-target="#registerModal">
-        Sign Up
-    </a>
+<div id="app">
+    <div class="container">
+        <!-- Button trigger modal -->
+        <a class="" data-bs-toggle="modal" data-bs-target="#signUpModal">
+            Sign Up
+        </a>
 
-    <!-- Modal -->
-    <div class="modal fade" id="registerModal" tabindex="-1" aria-labelledby="registerModalLabel" aria-hidden="true">
+
+    </div>
+    <!-- Sign Up Modal -->
+    <div class="modal fade" id="signUpModal" tabindex="-1" aria-labelledby="signUpModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="registerModalLabel">Sign Up</h5>
+                    <h5 class="modal-title" id="signUpModalLabel">Sign Up</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body">
-                    <form>
+                <form @submit.prevent="signUpClick">
+                    <div class="modal-body">
                         <div class="mb-3">
                             <label for="exampleInputEmail1" class="form-label">Email address</label>
-                            <input type="email" class="form-control" id="exampleInputEmail1"
+                            <input type="email" class="form-control" id="inputEmail"
                                    aria-describedby="emailHelp">
-                            <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>
+                            <div id="emailHelp" class="form-text">We'll never share your email with anyone else.
+                            </div>
                         </div>
                         <div class="mb-3">
                             <label for="exampleInputPassword1" class="form-label">Password</label>
-                            <input type="password" class="form-control" id="exampleInputPassword1">
+                            <input type="password" class="form-control" id="inputPassword">
                         </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary">Register</button>
-                </div>
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary" >
+                            Sign Up
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
 </div>
 
-
 <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
 
-<div id="app">{{ message }}</div>
 
 <script>
-    const {createApp} = Vue
 
+    const {createApp} = Vue
+    function tryToParseJSON(jsonString) {
+        try {
+            let o = JSON.parse(jsonString);
+            if (o && typeof o === "object") {
+                return o;
+            }
+        } catch (e) {
+        }
+        return '';
+    }
     createApp({
         data() {
             return {
-                signupEmail: null ,
-                signupPassword: null
+                signupEmail: null,
+                signupPassword: null,
+                modalHandler: null
             }
         },
         methods: {
@@ -111,19 +127,22 @@
                     });
             },
 
-        register: async function () {
-            let response = await this.send('POST', `/users`, {
-                email: this.email,
-                password: this.password
-            });
-            if (response.ok) {
-                this.sessionId = response.body.sessionId;
-                this.isAdmin = response.body.isAdmin;
-                localStorage.setItem("sessionId", this.sessionId);
-                this.modalHandler.hide()
-                alert("The registration was a success!");
+            signUpClick: async function () {
+                let response = await this.send('POST', `/users`, {
+                    email: this.email,
+                    password: this.password
+                });
+                if (response.ok) {
+                    this.sessionId = response.body.sessionId;
+                    this.isAdmin = response.body.isAdmin;
+                    localStorage.setItem("sessionId", this.sessionId);
+                    // Get a reference to the modal element using its ID
+                    this.modalHandler = new bootstrap.Modal(document.getElementById('signUpModal'), {})
+                    this.modalHandler.hide()
+                    alert("The registration was a success!");
+                }
+                return false
             }
-        }
         },
     }).mount('#app')
 </script>
