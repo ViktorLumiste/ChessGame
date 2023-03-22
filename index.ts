@@ -1,14 +1,18 @@
 import express, {Express, NextFunction, Request, Response} from 'express';
 import swaggerUi from 'swagger-ui-express';
 import YAML from 'yamljs';
-import {Error} from './types';
+import {Error} from './/types';
 import * as dotenv from 'dotenv';
-import exampleRoutes from "./routes/exampleRoutes";
+import exampleRoutes from ".//routes/exampleRoutes";
 
 dotenv.config();
 const port: Number = Number(process.env.PORT) || 3000;
 const app: Express = express();
 const swaggerDocument: Object = YAML.load('./swagger.yaml');
+
+// Import bcrypt for password encryption
+const bcrypt = require('bcrypt');
+const saltRounds = 10;
 
 // Middleware
 app.use(express.json());
@@ -20,6 +24,26 @@ app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
     console.error(err.stack);
     return res.status(err.statusCode || 500).send(err.message || 'Internal Server Error');
+});
+const users = [];
+
+// Endpoint to create a new user with email and password
+app.post('/users', (req, res) => {
+    const {email, password} = req.body;
+    if (!email || !password) {
+        return res.status(400).send('Email and password are required');
+    } else if (users.find(u => u.email === email)) {
+        return res.status(400).send('Email already exists');
+    }
+
+    // Encrypt the password before storing in the database
+    bcrypt.hash(password, saltRounds, (err, hash) => {
+        if (err) {
+            return res.status(500).send('Error encrypting password');
+        }
+        users.push({email, password: hash});
+        res.status(201).send('User created');
+    });
 });
 
 // Routes

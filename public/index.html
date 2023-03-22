@@ -35,15 +35,14 @@
                 <form @submit.prevent="signUpClick">
                     <div class="modal-body">
                         <div class="mb-3">
-                            <label for="exampleInputEmail1" class="form-label">Email address</label>
-                            <input type="email" class="form-control" id="inputEmail"
-                                   aria-describedby="emailHelp">
+                            <label for="signUpEmail" class="form-label">Email address</label>
+                            <input type="email" class="form-control" id="signUpEmail" aria-describedby="emailHelp" v-model:signUpEmail>
                             <div id="emailHelp" class="form-text">We'll never share your email with anyone else.
                             </div>
                         </div>
                         <div class="mb-3">
-                            <label for="exampleInputPassword1" class="form-label">Password</label>
-                            <input type="password" class="form-control" id="inputPassword">
+                            <label for="signUpPassword" class="form-label">Password</label>
+                            <input type="password" class="form-control" id="signUpPassword" v-model:signUpPassword>
                         </div>
 
                     </div>
@@ -78,8 +77,8 @@
     createApp({
         data() {
             return {
-                signupEmail: null,
-                signupPassword: null,
+                signUpEmail: null,
+                signUpPassword: null,
                 modalHandler: null
             }
         },
@@ -129,8 +128,8 @@
 
             signUpClick: async function () {
                 let response = await this.send('POST', `/users`, {
-                    email: document.getElementById('inputEmail').value,
-                    password: document.getElementById('inputPassword').value
+                    email: this.signUpEmail,
+                    password: this.signUpPassword
                 });
                 if (response.ok) {
                     this.sessionId = response.body.sessionId;
