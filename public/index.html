@@ -49,7 +49,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-primary" >
+                        <button type="submit" class="btn btn-primary" data-bs-dismiss="modal">
                             Sign Up
                         </button>
                     </div>
@@ -129,8 +129,8 @@
 
             signUpClick: async function () {
                 let response = await this.send('POST', `/users`, {
-                    email: this.email,
-                    password: this.password
+                    email: document.getElementById('inputEmail').value,
+                    password: document.getElementById('inputPassword').value
                 });
                 if (response.ok) {
                     this.sessionId = response.body.sessionId;
@@ -140,7 +140,7 @@
                     this.modalHandler = new bootstrap.Modal(document.getElementById('signUpModal'), {})
                     this.modalHandler.hide()
                     alert("The registration was a success!");
-                }
+                };
                 return false
             }
         },
