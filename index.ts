@@ -4,6 +4,9 @@ import YAML from 'yamljs';
 import {Error} from './/types';
 import * as dotenv from 'dotenv';
 import exampleRoutes from ".//routes/exampleRoutes";
+import {PrismaClient} from '@prisma/client';
+const prisma = new PrismaClient();
+import {User} from '@prisma/client';
 
 dotenv.config();
 const port: Number = Number(process.env.PORT) || 3000;
@@ -25,25 +28,32 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
     console.error(err.stack);
     return res.status(err.statusCode || 500).send(err.message || 'Internal Server Error');
 });
-const users = [];
 
 // Endpoint to create a new user with email and password
-app.post('/users', (req, res) => {
-    const {email, password} = req.body;
-    if (!email || !password) {
-        return res.status(400).send('Email and password are required');
-    } else if (users.find(u => u.email === email)) {
-        return res.status(400).send('Email already exists');
-    }
+app.post('/users', async (req, res) => {
 
-    // Encrypt the password before storing in the database
-    bcrypt.hash(password, saltRounds, (err, hash) => {
-        if (err) {
-            return res.status(500).send('Error encrypting password');
-        }
-        users.push({email, password: hash});
-        res.status(201).send('User created');
-    });
+    const {email, password} = req.body;
+    const result = await prisma.user.findUniqueOrThrow({
+        where: {
+            email: 'alice@prisma.io',
+        },
+    })
+    // if (!email || !password) {
+    //     return res.status(400).send('Email and password are required');
+    // } //else if (
+    //
+    // ) {
+    //     return res.status(400).send('Email already exists');
+    // }
+    //
+    // // Encrypt the password before storing in the database
+    // bcrypt.hash(password, saltRounds, (err, hash) => {
+    //     if (err) {
+    //         return res.status(500).send('Error encrypting password');
+    //     }
+    //     user.push({email, password: hash});
+    //     res.status(201).send('User created');
+    // });
 });
 
 // Routes
