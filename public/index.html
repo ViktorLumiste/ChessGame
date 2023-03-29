@@ -1,13 +1,163 @@
 <!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>REPLACE ME</title>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.3/css/all.css" crossorigin="anonymous">
+
+
+    <title>Hello, world!</title>
 </head>
 <body>
-    <h1>HERE BE YOUR CLIENT APP</h1>
+<div id="app">
+    <div class="container">
+        <!-- Button trigger modal -->
+        <a class="" data-bs-toggle="modal" data-bs-target="#signUpModal">
+            Sign Up
+        </a>
+
+
+    </div>
+    <!-- Sign Up Modal -->
+    <div class="modal fade" id="signUpModal" tabindex="-1" aria-labelledby="signUpModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="signUpModalLabel">Sign Up</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form @submit.prevent="signUpClick">
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="signUpEmail" class="form-label">Email address</label>
+                            <input type="email" class="form-control" id="signUpEmail" aria-describedby="emailHelp" v-model="signUpEmail">
+                            <div id="emailHelp" class="form-text">We'll never share your email with anyone else.
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="signUpPassword" class="form-label">Password</label>
+                            <input type="password" class="form-control" id="signUpPassword" v-model="signUpPassword">
+                        </div>
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary" data-bs-dismiss="modal">
+                            Sign Up
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+
+
+<script>
+
+    const {createApp} = Vue
+    function tryToParseJSON(jsonString) {
+        try {
+            let o = JSON.parse(jsonString);
+            if (o && typeof o === "object") {
+                return o;
+            }
+        } catch (e) {
+        }
+        return '';
+    }
+    createApp({
+        data() {
+            return {
+                signUpEmail: null,
+                signUpPassword: null,
+                modalHandler: null
+            }
+        },
+        methods: {
+            send: function (method, url, body) {
+                const vue = this;
+
+                async function CheckError(response) {
+                    if (response.status >= 200 && response.status <= 299) {
+                        let responseText = await response.text()
+                        return {ok: true, status: response.status, body: tryToParseJSON(responseText)}
+                    } else {
+                        let responseText = await response.text()
+                        let responseObject = tryToParseJSON(responseText)
+                        if (typeof responseObject === 'object' && typeof responseObject.error === 'string') {
+                            if (response.status === 401 && responseObject.error === "Invalid token") {
+                                vue.clearStorageAndToggleLoginButtons();
+                            } else if (response.status === 401 && responseObject.error === "You have to login") {
+                                vue.clearStorageAndToggleLoginButtons();
+                            }
+                            alert('Error code ' + response.status + ":\n" + responseObject.error)
+                        } else {
+                            alert('Error code ' + response.status + ":\n" + responseText)
+                        }
+                        return {ok: false, status: response.status, body: responseObject || responseText}
+                    }
+                }
+
+                const headers = {
+                    'Content-Type': 'application/json'
+                };
+                if (this.sessionId) {
+                    headers.Authorization = "Bearer " + this.sessionId;
+                }
+                return fetch(url, {
+                    method: method,
+                    headers,
+                    body: JSON.stringify(body)
+                })
+                    .then(CheckError)
+                    .then((jsonResponse) => {
+                        return jsonResponse
+                    }).catch((error) => {
+                        throw Error('Network error: ' + error);
+                    });
+            },
+
+            signUpClick: async function () {
+                let response = await this.send('POST', `/users`, {
+                    email: this.signUpEmail,
+                    password: this.signUpPassword
+
+                });
+                if (response.ok) {
+                    this.sessionId = response.body.sessionId;
+                    this.isAdmin = response.body.isAdmin;
+                    localStorage.setItem("sessionId", this.sessionId);
+                    // Get a reference to the modal element using its ID
+                    this.modalHandler = new bootstrap.Modal(document.getElementById('signUpModal'), {})
+                    this.modalHandler.hide()
+                    alert("The registration was a success!");
+                };
+                return false
+            }
+        },
+    }).mount('#app')
+</script>
+
+<!-- Optional JavaScript; choose one of the two! -->
+
+<!-- Option 1: Bootstrap Bundle with Popper -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+        crossorigin="anonymous"></script>
+
+<!-- Option 2: Separate Popper and Bootstrap JS -->
+<!--
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js" integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF" crossorigin="anonymous"></script>
+-->
 </body>
 </html>

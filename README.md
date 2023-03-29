@@ -12,11 +12,11 @@ To begin working with this project, you need to have Node.js installed on your m
 Once you have installed Node.js, follow these steps:
 
 1. Fork and clone this repository to your local machine.
-1. Open the root directory of the project in terminal. 
-1. Copy the .env.sample file to .env by executing `cp .env.sample .env` and change the values to your liking.
-1. Run `npm install` to install all the necessary dependencies for the project.
-1. Run `npm start` to start the server on port 3000 (or whatever port you have specified in the .env file).
-1. Navigate to [http://localhost:3000/docs](http://localhost:3000/docs) to see the API documentation.
+2. Open the root directory of the project in terminal. 
+3. Copy the .env.sample file to .env by executing `cp .env.sample .env` and change the values to your liking.
+4. Run `npm install` to install all the necessary dependencies for the project.
+5. Run `npm start` to start the server on port 3000 (or whatever port you have specified in the .env file).
+6. Navigate to [http://localhost:3000](http://localhost:3000) to access the webpage.
 
 ## Usage
 
