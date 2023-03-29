@@ -36,13 +36,13 @@
                     <div class="modal-body">
                         <div class="mb-3">
                             <label for="signUpEmail" class="form-label">Email address</label>
-                            <input type="email" class="form-control" id="signUpEmail" aria-describedby="emailHelp" v-model:signUpEmail>
+                            <input type="email" class="form-control" id="signUpEmail" aria-describedby="emailHelp" v-model="signUpEmail">
                             <div id="emailHelp" class="form-text">We'll never share your email with anyone else.
                             </div>
                         </div>
                         <div class="mb-3">
                             <label for="signUpPassword" class="form-label">Password</label>
-                            <input type="password" class="form-control" id="signUpPassword" v-model:signUpPassword>
+                            <input type="password" class="form-control" id="signUpPassword" v-model="signUpPassword">
                         </div>
 
                     </div>
@@ -130,6 +130,7 @@
                 let response = await this.send('POST', `/users`, {
                     email: this.signUpEmail,
                     password: this.signUpPassword
+
                 });
                 if (response.ok) {
                     this.sessionId = response.body.sessionId;

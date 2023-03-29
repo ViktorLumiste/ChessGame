@@ -29,32 +29,35 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
     return res.status(err.statusCode || 500).send(err.message || 'Internal Server Error');
 });
 
-// Endpoint to create a new user with email and password
-app.post('/users', async (req, res) => {
 
+// Endpoint to create a new User with email and password
+app.post('/users', async (req, res) => {
     const {email, password} = req.body;
-    const result = await prisma.user.findUniqueOrThrow({
-        where: {
-            email: 'alice@prisma.io',
-        },
-    })
-    // if (!email || !password) {
-    //     return res.status(400).send('Email and password are required');
-    // } //else if (
-    //
-    // ) {
-    //     return res.status(400).send('Email already exists');
-    // }
-    //
-    // // Encrypt the password before storing in the database
-    // bcrypt.hash(password, saltRounds, (err, hash) => {
-    //     if (err) {
-    //         return res.status(500).send('Error encrypting password');
-    //     }
-    //     user.push({email, password: hash});
-    //     res.status(201).send('User created');
-    // });
+
+    try {
+        const userExists = await prisma.user.findUnique({
+            where: { email: {email} }
+        });
+        if (userExists) {
+            return res.status(400).send('Email already exists');
+        }
+
+        const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+        const newUser = await prisma.User.create({
+            data: {
+                email: email,
+                password: hashedPassword
+            }
+        });
+
+        res.status(201).send('User created');
+    } catch (error) {
+        console.error(error);
+        return res.status(500).send('Internal Server Error');
+    }
 });
+
 
 // Routes
 app.use('/examples', exampleRoutes);
