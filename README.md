@@ -11,16 +11,26 @@ To begin working with this project, you need to have Node.js installed on your m
 
 Once you have installed Node.js, follow these steps:
 
-1. Fork and clone this repository to your local machine.
-2. Open the root directory of the project in terminal. 
-3. Copy the .env.sample file to .env by executing `cp .env.sample .env` and change the values to your liking.
-4. Run `npm install` to install all the necessary dependencies for the project.
-5. Run `npm start` to start the server on port 3000 (or whatever port you have specified in the .env file).
-6. Navigate to [http://localhost:3000](http://localhost:3000) to access the webpage.
+1. Install files from this repository to your computer.
+2. Run `npm install` to install all the necessary dependencies for the project.
+3. Create the necessary database (see below).
+4. Run `npm start` to start the server on port 3000 (or whatever port you have specified in the .env file).
+5. Navigate to [http://localhost:3000](http://localhost:3000) to access the webpage.
 
-## Usage
+## Database
+1. Install MySQL server 
+2. Open mysql command line and enter the following commands: `ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'yourrootpassword';` and `flush privileges;`
+3. Create schema called `logins` by entering the following command: `create schema logins;`
+4. Create database called `logininfo` by entering the following command: `create table logininfo
+(
+userID    int auto_increment
+primary key,
+email     varchar(50)             not null,
+password  varchar(100)            not null,
+sessionId varchar(100) default '' not null
+);`
 
-You must create your front end app in public/index.html file. Your front end app will be using the API in index.js as its backend. You can use for example Vue in CDN mode for front end. When needed, create new endpoints in index.js for your front end app. Do not forget to document them in the [swagger.yaml](swagger.yaml) file. An excellent way to generate content to swagger.yaml is to use Apicurio Studio (https://studio.apicur.io/).
+   
 
 ## License
 
