@@ -12,7 +12,7 @@
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.3/css/all.css" crossorigin="anonymous">
 
 
-    <title>Hello, world!</title>
+    <title>Welcome!</title>
 </head>
 <body>
 <div id="app">
@@ -20,6 +20,9 @@
         <!-- Button trigger modal -->
         <a class="" data-bs-toggle="modal" data-bs-target="#signUpModal">
             Sign Up
+        </a>
+        <a class="" data-bs-toggle="modal" data-bs-target="#signInModal">
+            Sign In
         </a>
 
 
@@ -56,6 +59,38 @@
             </div>
         </div>
     </div>
+    <!-- Sign In Modal -->
+    <div class="modal fade" id="signInModal" tabindex="-1" aria-labelledby="signInModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="signInModalLabel">Sign In</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form @submit.prevent="signInClick">
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="signInEmail" class="form-label">Email address</label>
+                            <input type="email" class="form-control" id="signInEmail" aria-describedby="emailHelp" v-model="signInEmail">
+                            <div id="emailHelp" class="form-text">We'll never share your email with anyone else.
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="signInPassword" class="form-label">Password</label>
+                            <input type="password" class="form-control" id="signInPassword" v-model="signInPassword">
+                        </div>
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary" data-bs-dismiss="modal">
+                            Sign In
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 </div>
 
 <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
@@ -79,6 +114,8 @@
             return {
                 signUpEmail: null,
                 signUpPassword: null,
+                signInEmail: null,
+                signInPassword: null,
                 modalHandler: null
             }
         },
@@ -140,6 +177,30 @@
                     this.modalHandler = new bootstrap.Modal(document.getElementById('signUpModal'), {})
                     this.modalHandler.hide()
                     alert("The registration was a success!");
+                };
+                return false
+            },
+            signInClick: async function () {
+                let response = await this.send('POST', `/userss`, {
+                    email: this.signInEmail,
+                    password: this.signInPassword
+
+                });
+                if (response.ok) {
+                    let response = await this.send('POST', `/session`, {
+                        email: this.signInEmail
+                    });
+                    if (response.ok) {
+                        this.sessionId = response.body.sessionId;
+                        localStorage.setItem("sessionId", this.sessionId);
+                        window.location.href = "account";
+                    };
+                    this.isAdmin = response.body.isAdmin;
+
+                    // Get a reference to the modal element using its ID
+                    this.modalHandler = new bootstrap.Modal(document.getElementById('signInModal'), {})
+                    this.modalHandler.hide()
+                    alert("Successfully logged in!");
                 };
                 return false
             }
