@@ -15,6 +15,7 @@
         body {
             font-family: Arial, sans-serif;
         }
+
         .profile {
             max-width: 500px;
             margin: 0 auto;
@@ -23,9 +24,11 @@
             border: 1px solid #ddd;
             border-radius: 5px;
         }
+
         .profile h2 {
             text-align: center;
         }
+
         .profile img {
             display: block;
             margin: 0 auto;
@@ -33,9 +36,11 @@
             width: 150px;
             height: 150px;
         }
+
         .profile p {
             margin-bottom: 10px;
         }
+
         .profile .stats {
             display: flex;
             justify-content: space-between;
@@ -44,12 +49,15 @@
 </head>
 <body>
 <div id="app">
-<div class="profile">
-    <h2>Player Profile</h2>
-    <img src="profile_picture.jpg" alt="Profile Picture">
+    <div class="profile" >
+        <h2>Player Profile</h2>
+        <img src="profile_picture.jpg" alt="Profile Picture">
 
-    <p><strong>Email:</strong> {{ email }}</p>
-</div>
+        <p><strong>Email:</strong> {{ email }}</p>
+        <button type="submit" class="btn btn-primary" data-bs-dismiss="modal" @click="signOut">
+            Sign out
+        </button>
+    </div>
 </div>
 </body>
 
@@ -70,11 +78,10 @@
         }
         return '';
     }
-
     createApp({
         data() {
             return {
-                email:null,
+                email: null,
                 modalHandler: null,
                 sessionId: localStorage.getItem('sessionId')
             }
@@ -82,7 +89,8 @@
         mounted() {
             window.addEventListener("load", () => this.onWindowLoad());
         },
-        methods: {send: function (method, url, body) {
+        methods: {
+            send: function (method, url, body) {
                 const vue = this;
 
                 async function CheckError(response) {
@@ -134,8 +142,16 @@
                     this.email = response.body.email
                     console.log(this.email)
                     alert("Page loaded successfully");
-                };
+                }
+                else if (response.status === 404) {
+                    window.location.href = "/"
+                }
+                ;
                 return false
+            },
+            signOut() {
+                localStorage.setItem('sessionId', null); // Set sessionId in localStorage to null
+                window.location.href = "/"; // Redirect the user to the index page
             },
         }
     }).mount('#app')
