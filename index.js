@@ -19,7 +19,7 @@ app.use(express.static('public'));
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 
-// Connect to databas
+// Connect to database
 var con = mysql.createConnection({
     host: "localhost",
     user: "root",
@@ -29,7 +29,7 @@ var con = mysql.createConnection({
 
 require('dotenv').config();
 // Create a user
-app.post('/userss', (req, res) => {
+app.post('/signIn', (req, res) => {
     // Get email and password from request body
     const email = req.body.email;
     const password = req.body.password;
@@ -88,7 +88,7 @@ app.post('/account', (req, res) => {
         })
     }
 )
-app.post('/users', (req, res) => {
+app.post('/userReg', (req, res) => {
 
     // Get email and password from request body
     const email = req.body.email;

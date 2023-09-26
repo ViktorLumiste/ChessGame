@@ -71,9 +71,7 @@
                     <div class="modal-body">
                         <div class="mb-3">
                             <label for="signInEmail" class="form-label">Email address</label>
-                            <input type="email" class="form-control" id="signInEmail" aria-describedby="emailHelp" v-model="signInEmail">
-                            <div id="emailHelp" class="form-text">We'll never share your email with anyone else.
-                            </div>
+                            <input type="email" class="form-control" id="signInEmail" v-model="signInEmail">
                         </div>
                         <div class="mb-3">
                             <label for="signInPassword" class="form-label">Password</label>
@@ -164,24 +162,22 @@
             },
 
             signUpClick: async function () {
-                let response = await this.send('POST', `/users`, {
+                let response = await this.send('POST', `/userReg`, {
                     email: this.signUpEmail,
                     password: this.signUpPassword
 
                 });
                 if (response.ok) {
-                    this.sessionId = response.body.sessionId;
-                    this.isAdmin = response.body.isAdmin;
-                    localStorage.setItem("sessionId", this.sessionId);
+                    // this.isAdmin = response.body.isAdmin;
                     // Get a reference to the modal element using its ID
                     this.modalHandler = new bootstrap.Modal(document.getElementById('signUpModal'), {})
                     this.modalHandler.hide()
-                    alert("The registration was a success!");
-                };
+                    console.log("The registration was a success!");
+                }
                 return false
             },
             signInClick: async function () {
-                let response = await this.send('POST', `/userss`, {
+                let response = await this.send('POST', `/signIn`, {
                     email: this.signInEmail,
                     password: this.signInPassword
 
@@ -194,14 +190,14 @@
                         this.sessionId = response.body.sessionId;
                         localStorage.setItem("sessionId", this.sessionId);
                         window.location.href = "account";
-                    };
-                    this.isAdmin = response.body.isAdmin;
+                    }
+                    // this.isAdmin = response.body.isAdmin;
 
                     // Get a reference to the modal element using its ID
                     this.modalHandler = new bootstrap.Modal(document.getElementById('signInModal'), {})
                     this.modalHandler.hide()
-                    alert("Successfully logged in!");
-                };
+                    console.log("Successfully logged in!");
+                }
                 return false
             }
         },
