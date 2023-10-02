@@ -61,38 +61,43 @@
             Change Password
         </button>
     </div>
-
-    <div class="modal fade" id="passChangeModal" tabindex="-1" aria-labelledby="passChangeModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="passChangeModalLabel">Sign Up</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <form @submit.prevent="changePassClick">
-                    <div class="modal-body">
-                        <div class="mb-3">
-                            <label for="signUpEmail" class="form-label">New password</label>
-                            <input type="email" class="form-control" id="signUpEmail" v-model="newPass1">
-                        </div>
-                        <div class="mb-3">
-                            <label for="signUpPassword" class="form-label">Repeat the new password</label>
-                            <input type="password" class="form-control" id="signUpPassword" v-model="newPass2">
-                        </div>
-
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-primary" data-bs-dismiss="modal">
-                            Sign Up
-                        </button>
-                    </div>
-                </form>
+</div>
+<div class="modal fade" id="passChangeModal" tabindex="-1" aria-labelledby="passChangeModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="passChangeModalLabel">Sign Up</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
+            <form @submit.prevent="changePassClick">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="curPass" class="form-label">Enter your current password</label>
+                        <input type="password" class="form-control" id="curPass" v-model="curPass">
+                    </div>
+                    <div class="mb-3">
+                        <label for="newPass1" class="form-label">New password</label>
+                        <input type="password" class="form-control" id="newPass1" v-model="newPass1">
+                    </div>
+                    <div class="mb-3">
+                        <label for="newPass2" class="form-label">Repeat the new password</label>
+                        <input type="password" class="form-control" id="newPass2" v-model="newPass2">
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary" data-bs-dismiss="modal">
+                        Change Password
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
+</div>
 <script type='text/javascript' src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+
 
 <script>
 
@@ -113,10 +118,7 @@
             return {
                 email: null,
                 modalHandler: null,
-                newPass1:null,
-                newPass2:null,
                 sessionId: localStorage.getItem('sessionId')
-
             }
         },
         mounted() {
@@ -165,21 +167,17 @@
                         throw Error('Network error: ' + error);
                     });
             },
-
             changePassClick: async function () {
                 let response = await this.send('POST', `/account`, {
-                    sessionId: this.sessionId,
-
+                    sessionId: this.sessionId
                 });
                 if (response.ok) {
-                    let response = await this.send('POST', `/session`, {
-                        email: this.signInEmail
-                    });
-                    if (response.ok) {
-                        this.sessionId = response.body.sessionId;
-                        localStorage.setItem("sessionId", this.sessionId);
-                        window.location.href = "account";
-                    }
+                        let response = await this.send('POST', `/passChange`, {
+                            newPass1: this.newPass1,
+                            newPass2: this.newPass2,
+                            curPass: this.curPass,
+                            email: response.body.email
+                        })
 
                     // Get a reference to the modal element using its ID
                     this.modalHandler = new bootstrap.Modal(document.getElementById('signInModal'), {})
@@ -189,11 +187,9 @@
                 return false
             },
 
-
             onWindowLoad: async function () {
                 let response = await this.send('POST', `/account`, {
                     sessionId: this.sessionId,
-
                 });
                 if (response.ok) {
                     this.email = response.body.email
@@ -202,15 +198,14 @@
                 }
                 else if (response.status === 404) {
                     window.location.href = "/"
-                }
+                };
                 return false
             },
             signOut() {
                 localStorage.setItem('sessionId', null); // Set sessionId in localStorage to null
                 window.location.href = "/"; // Redirect the user to the index page
-            }
-
-        },
+            },
+        }
     }).mount('#app')
 </script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"

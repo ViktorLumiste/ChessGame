@@ -116,7 +116,35 @@ app.post('/userReg', (req, res) => {
         }
     })
 });
-// Profile page route
+app.post('/passChange', (req, res) => {
+    const email = req.body.email;
+    const curPass = req.body.curPass;
+    const newPass1 = req.body.newPass1;
+    const newPass2 = req.body.newPass2;
+    con.query(`select *
+               from logininfo
+               where password = '${curPass}' and  email = '${email}'`, function (err, result, fields) {
+        if (err) throw err;
+        if (result.length > 0) {
+            res.status(400).send('Incorrect current password');
+        } else {
+            if (newPass1 == newPass2) {
+                bcrypt.hash(newPass1, saltRounds, function (err, hash) {
+                    // Store hash in your password DB.
+                    con.query(`update logininfo
+                               set password = '${hash}'
+                               where email = '${email}'`, function (err, result, fields) {
+                        if (err) throw err;
+                        res.status(201).send('Password changed');
+                    });
+                })
+            } else {
+                res.status(400).send('New passwords do not match');
+            }
+        }
+    })
+});
+// Profile page reroute
 app.get('/account', (req, res) => {
     res.sendFile(__dirname + '/public/account.html');
 })

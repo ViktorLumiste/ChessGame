@@ -71,7 +71,7 @@
                     <div class="modal-body">
                         <div class="mb-3">
                             <label for="signInEmail" class="form-label">Email address</label>
-                            <input type="email" class="form-control" id="signInEmail" v-model="signInEmail">
+                            <input type="email" class="form-control" id="signInEmail" aria-describedby="emailHelp" v-model="signInEmail">
                         </div>
                         <div class="mb-3">
                             <label for="signInPassword" class="form-label">Password</label>
@@ -168,12 +168,14 @@
 
                 });
                 if (response.ok) {
-                    // this.isAdmin = response.body.isAdmin;
+                    this.sessionId = response.body.sessionId;
+                    this.isAdmin = response.body.isAdmin;
+                    localStorage.setItem("sessionId", this.sessionId);
                     // Get a reference to the modal element using its ID
                     this.modalHandler = new bootstrap.Modal(document.getElementById('signUpModal'), {})
                     this.modalHandler.hide()
-                    console.log("The registration was a success!");
-                }
+                    alert("The registration was a success!");
+                };
                 return false
             },
             signInClick: async function () {
@@ -190,14 +192,14 @@
                         this.sessionId = response.body.sessionId;
                         localStorage.setItem("sessionId", this.sessionId);
                         window.location.href = "account";
-                    }
-                    // this.isAdmin = response.body.isAdmin;
+                    };
+                    this.isAdmin = response.body.isAdmin;
 
                     // Get a reference to the modal element using its ID
                     this.modalHandler = new bootstrap.Modal(document.getElementById('signInModal'), {})
                     this.modalHandler.hide()
-                    console.log("Successfully logged in!");
-                }
+                    alert("Successfully logged in!");
+                };
                 return false
             }
         },
