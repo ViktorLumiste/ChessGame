@@ -66,10 +66,10 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="passChangeModalLabel">Sign Up</h5>
+                <h5 class="modal-title" id="passChangeModalLabel">Change password</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form @submit.prevent="changePassClick">
+            <form @submit.prevent="changePassClick" id="passChange">
                 <div class="modal-body">
                     <div class="mb-3">
                         <label for="curPass" class="form-label">Enter your current password</label>
@@ -87,14 +87,13 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-primary" data-bs-dismiss="modal">
+                    <button type="submit" class="btn btn-primary" form="passChange">
                         Change Password
                     </button>
                 </div>
             </form>
         </div>
     </div>
-</div>
 </div>
 <script type='text/javascript' src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
 
@@ -167,28 +166,49 @@
                         throw Error('Network error: ' + error);
                     });
             },
+            // changePassClick: async function (event) {
+            //     // Prevent the default form submission
+            //     event.preventDefault();
+            //
+            //     try {
+            //         // Get user ID or relevant information needed for the request
+            //         let getIdResponse = await this.send('GET', `/GetId`, {
+            //             sessionId: this.sessionId
+            //         });
+            //
+            //         if (!getIdResponse.ok) {
+            //             console.error('Failed to get user ID:', getIdResponse);
+            //             return;
+            //         }
+            //
+            //         let userId = getIdResponse.body.userId; // Adjust this based on your server response
+            //
+            //         // Make the password change request
+            //         let passChangeResponse = await this.send('PUT', `/passChange/${userId}`, {
+            //             newPass1: this.newPass1,
+            //             newPass2: this.newPass2,
+            //             curPass: this.curPass
+            //         });
+            //
+            //         if (passChangeResponse.ok) {
+            //             this.modalHandler = new bootstrap.Modal(document.getElementById('passChangeModal'), {});
+            //             this.modalHandler.hide();
+            //             alert("Password changed successfully!");
+            //         } else {
+            //             console.error('Failed to change password:', passChangeResponse);
+            //         }
+            //
+            //     } catch (error) {
+            //         console.error("Error during form submission:", error);
+            //     }
+            //     return false;
+            // },
             changePassClick: async function () {
-                let response = await this.send('POST', `/account`, {
-                    sessionId: this.sessionId
-                });
-                if (response.ok) {
-                        let response = await this.send('POST', `/passChange`, {
-                            newPass1: this.newPass1,
-                            newPass2: this.newPass2,
-                            curPass: this.curPass,
-                            email: response.body.email
-                        })
-
-                    // Get a reference to the modal element using its ID
-                    this.modalHandler = new bootstrap.Modal(document.getElementById('signInModal'), {})
-                    this.modalHandler.hide()
-                    alert.log("Password changed successfully!");
-                }
-                return false
+                console.log('HERE')
             },
 
             onWindowLoad: async function () {
-                let response = await this.send('POST', `/account`, {
+                let response = await this.send('POST', `/GetId`, {
                     sessionId: this.sessionId,
                 });
                 if (response.ok) {

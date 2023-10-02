@@ -81,7 +81,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-primary" data-bs-dismiss="modal">
+                        <button type="submit" class="btn btn-primary">
                             Sign In
                         </button>
                     </div>
@@ -174,7 +174,7 @@
                     // Get a reference to the modal element using its ID
                     this.modalHandler = new bootstrap.Modal(document.getElementById('signUpModal'), {})
                     this.modalHandler.hide()
-                    alert("The registration was a success!");
+                    console.log("The registration was a success!");
                 };
                 return false
             },
@@ -185,20 +185,20 @@
 
                 });
                 if (response.ok) {
-                    let response = await this.send('POST', `/session`, {
+                    let response = await this.send('POST', `/MakeId`, {
                         email: this.signInEmail
                     });
                     if (response.ok) {
                         this.sessionId = response.body.sessionId;
                         localStorage.setItem("sessionId", this.sessionId);
-                        window.location.href = "account";
+                        window.location.assign('account');
                     };
                     this.isAdmin = response.body.isAdmin;
 
                     // Get a reference to the modal element using its ID
                     this.modalHandler = new bootstrap.Modal(document.getElementById('signInModal'), {})
                     this.modalHandler.hide()
-                    alert("Successfully logged in!");
+                    console.log("Successfully logged in!");
                 };
                 return false
             }

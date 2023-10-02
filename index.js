@@ -53,7 +53,7 @@ app.post('/signIn', (req, res) => {
     })
 
 })
-app.post('/session', (req, res) => {
+app.post('/MakeId', (req, res) => {
     // Get email and password from request body
     const email = req.body.email;
     const password = req.body.password;
@@ -71,7 +71,7 @@ app.post('/session', (req, res) => {
     })
 
 })
-app.post('/account', (req, res) => {
+app.post('/GetId', (req, res) => {
         // Get session id from request body
         const sessionId = req.body.sessionId;
         // Get email with that session id from database
@@ -116,19 +116,20 @@ app.post('/userReg', (req, res) => {
         }
     })
 });
-app.post('/passChange', (req, res) => {
+app.put('/passChange', (req, res) => {
     const email = req.body.email;
     const curPass = req.body.curPass;
     const newPass1 = req.body.newPass1;
     const newPass2 = req.body.newPass2;
+    console.log(email, curPass, newPass1, newPass2)
     con.query(`select *
                from logininfo
                where password = '${curPass}' and  email = '${email}'`, function (err, result, fields) {
         if (err) throw err;
         if (result.length > 0) {
-            res.status(400).send('Incorrect current password');
+            res.status(401).send('Incorrect current password. Please try again.');
         } else {
-            if (newPass1 == newPass2) {
+            if (newPass1 === newPass2) {
                 bcrypt.hash(newPass1, saltRounds, function (err, hash) {
                     // Store hash in your password DB.
                     con.query(`update logininfo
