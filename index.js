@@ -29,7 +29,7 @@ var con = mysql.createConnection({
 
 require('dotenv').config();
 // Create a user
-app.post('/signIn', (req, res) => {
+app.post('/signin', (req, res) => {
     // Get email and password from request body
     const email = req.body.email;
     const password = req.body.password;
@@ -53,7 +53,7 @@ app.post('/signIn', (req, res) => {
     })
 
 })
-app.post('/MakeId', (req, res) => {
+app.post('/makeid', (req, res) => {
     // Get email and password from request body
     const email = req.body.email;
     const password = req.body.password;
@@ -71,7 +71,7 @@ app.post('/MakeId', (req, res) => {
     })
 
 })
-app.post('/GetId', (req, res) => {
+app.post('/getid', (req, res) => {
         // Get session id from request body
         const sessionId = req.body.sessionId;
         // Get email with that session id from database
@@ -88,7 +88,7 @@ app.post('/GetId', (req, res) => {
         })
     }
 )
-app.post('/userReg', (req, res) => {
+app.post('/userreg', (req, res) => {
 
     // Get email and password from request body
     const email = req.body.email;
@@ -116,7 +116,7 @@ app.post('/userReg', (req, res) => {
         }
     })
 });
-app.put('/passChange', (req, res) => {
+app.put('/passchange', (req, res) => {
     const email = req.body.email;
     const curPass = req.body.curPass;
     const newPass1 = req.body.newPass1;

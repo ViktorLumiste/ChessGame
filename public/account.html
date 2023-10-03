@@ -69,7 +69,7 @@
                 <h5 class="modal-title" id="passChangeModalLabel">Change password</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form @submit.prevent="changePassClick" id="passChange">
+            <form @submit.prevent="methods.changePassClick"  id="passChange" >
                 <div class="modal-body">
                     <div class="mb-3">
                         <label for="curPass" class="form-label">Enter your current password</label>
@@ -87,7 +87,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-primary" form="passChange">
+                    <button type="submit" class="btn btn-primary"  form="passChange" >
                         Change Password
                     </button>
                 </div>
@@ -166,49 +166,39 @@
                         throw Error('Network error: ' + error);
                     });
             },
-            // changePassClick: async function (event) {
-            //     // Prevent the default form submission
-            //     event.preventDefault();
-            //
-            //     try {
-            //         // Get user ID or relevant information needed for the request
-            //         let getIdResponse = await this.send('GET', `/GetId`, {
-            //             sessionId: this.sessionId
-            //         });
-            //
-            //         if (!getIdResponse.ok) {
-            //             console.error('Failed to get user ID:', getIdResponse);
-            //             return;
-            //         }
-            //
-            //         let userId = getIdResponse.body.userId; // Adjust this based on your server response
-            //
-            //         // Make the password change request
-            //         let passChangeResponse = await this.send('PUT', `/passChange/${userId}`, {
-            //             newPass1: this.newPass1,
-            //             newPass2: this.newPass2,
-            //             curPass: this.curPass
-            //         });
-            //
-            //         if (passChangeResponse.ok) {
-            //             this.modalHandler = new bootstrap.Modal(document.getElementById('passChangeModal'), {});
-            //             this.modalHandler.hide();
-            //             alert("Password changed successfully!");
-            //         } else {
-            //             console.error('Failed to change password:', passChangeResponse);
-            //         }
-            //
-            //     } catch (error) {
-            //         console.error("Error during form submission:", error);
-            //     }
-            //     return false;
-            // },
             changePassClick: async function () {
-                console.log('HERE')
+                // change the password after getting 2 new passwords and the current password
+                console.log('Started changing password')
+                let getIdResponse = await this.send('GET', `/getid`, {
+                    sessionId: this.sessionId
+                });
+                if (getIdResponse.ok) {
+                    this.email = getIdResponse.body.email
+                } else {
+                    console.log('Failed to get id:', getIdResponse);
+                }
+
+                // Make the password change request
+                let passChangeResponse = await this.send('PUT', `/passchange`, {
+                    newPass1: this.newPass1,
+                    newPass2: this.newPass2,
+                    curPass: this.curPass,
+                    email: this.email
+                });
+
+                if (passChangeResponse.ok) {
+                    this.modalHandler = new bootstrap.Modal(document.getElementById('passChangeModal'), {});
+                    this.modalHandler.hide();
+                    alert("Password changed successfully!");
+                } else {
+                    console.log('Failed to change password:', passChangeResponse);
+                }
+
+            return false;
             },
 
             onWindowLoad: async function () {
-                let response = await this.send('POST', `/GetId`, {
+                let response = await this.send('POST', `/getid`, {
                     sessionId: this.sessionId,
                 });
                 if (response.ok) {
@@ -222,7 +212,7 @@
                 return false
             },
             signOut() {
-                localStorage.setItem('sessionId', null); // Set sessionId in localStorage to null
+                localStorage.setItem('sessionid', null); // Set sessionId in localStorage to null
                 window.location.href = "/"; // Redirect the user to the index page
             },
         }

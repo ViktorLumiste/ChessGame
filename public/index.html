@@ -162,7 +162,7 @@
             },
 
             signUpClick: async function () {
-                let response = await this.send('POST', `/userReg`, {
+                let response = await this.send('POST', `/userreg`, {
                     email: this.signUpEmail,
                     password: this.signUpPassword
 
@@ -179,13 +179,13 @@
                 return false
             },
             signInClick: async function () {
-                let response = await this.send('POST', `/signIn`, {
+                let response = await this.send('POST', `/signin`, {
                     email: this.signInEmail,
                     password: this.signInPassword
 
                 });
                 if (response.ok) {
-                    let response = await this.send('POST', `/MakeId`, {
+                    let response = await this.send('POST', `/makeid`, {
                         email: this.signInEmail
                     });
                     if (response.ok) {
