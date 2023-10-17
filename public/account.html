@@ -49,7 +49,7 @@
 </head>
 <body>
 <div id="app">
-    <div class="profile" >
+    <div class="profile">
         <h2>Player Profile</h2>
         <img src="profile_picture.jpg" alt="Profile Picture">
 
@@ -57,41 +57,78 @@
         <button type="submit" class="btn btn-primary" data-bs-dismiss="modal" @click="signOut">
             Sign out
         </button>
-        <button type="submit" class="btn btn-primary" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#passChangeModal">
+        <button type="submit" class="btn btn-primary" data-bs-dismiss="modal" data-bs-toggle="modal"
+                data-bs-target="#passChangeModal">
             Change Password
         </button>
     </div>
-</div>
-<div class="modal fade" id="passChangeModal" tabindex="-1" aria-labelledby="passChangeModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="passChangeModalLabel">Change password</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <form @submit.prevent="methods.changePassClick"  id="passChange" >
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label for="curPass" class="form-label">Enter your current password</label>
-                        <input type="password" class="form-control" id="curPass" v-model="curPass">
-                    </div>
-                    <div class="mb-3">
-                        <label for="newPass1" class="form-label">New password</label>
-                        <input type="password" class="form-control" id="newPass1" v-model="newPass1">
-                    </div>
-                    <div class="mb-3">
-                        <label for="newPass2" class="form-label">Repeat the new password</label>
-                        <input type="password" class="form-control" id="newPass2" v-model="newPass2">
-                    </div>
 
+    <div class="modal fade" id="passChangeModal" tabindex="-1" aria-labelledby="passChangeModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="passChangeModalLabel">Change password</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-primary"  form="passChange" >
-                        Change Password
-                    </button>
+                    <form @submit.prevent="changePassClick" id="passChange">
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label for="curPass" class="form-label">Enter your current password</label>
+                                <input type="password" class="form-control" id="curPass" v-model="curPass">
+                            </div>
+                            <div class="mb-3">
+                                <label for="newPass1" class="form-label">New password</label>
+                                <input type="password" class="form-control" id="newPass1" v-model="newPass1">
+                            </div>
+                            <div class="mb-3">
+                                <label for="newPass2" class="form-label">Repeat the new password</label>
+                                <input type="password" class="form-control" id="newPass2" v-model="newPass2">
+                            </div>
+
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary" form="passChange">
+                                Change Password
+                            </button>
+                        </div>
+                    </form>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="emailChangeModal" tabindex="-1" aria-labelledby="emailChangeModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="emailChangeModalLabel">Change email</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-            </form>
+                    <form @submit.prevent="changeEmailClick" id="emailChange">
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label for="curPass" class="form-label">Enter your current password</label>
+                                <input type="password" class="form-control" id="curPass" v-model="curPass">
+                            </div>
+                            <div class="mb-3">
+                                <label for="newEmail1" class="form-label">New email</label>
+                                <input type="email" class="form-control" id="newEmail1" v-model="newEmail1">
+                            </div>
+                            <div class="mb-3">
+                                <label for="newEmail2" class="form-label">Repeat the new email</label>
+                                <input type="email" class="form-control" id="newEmail2" v-model="newEmail2">
+                            </div>
+
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary" form="emailChange">
+                                Change Email
+                            </button>
+                        </div>
+                    </form>
+            </div>
         </div>
     </div>
 </div>
@@ -112,11 +149,17 @@
         }
         return '';
     }
+
     createApp({
         data() {
             return {
                 email: null,
                 modalHandler: null,
+                curPass: null,
+                newPass1: null,
+                newPass2: null,
+                newEmail1: null,
+                newEmail2: null,
                 sessionId: localStorage.getItem('sessionId')
             }
         },
@@ -169,7 +212,39 @@
             changePassClick: async function () {
                 // change the password after getting 2 new passwords and the current password
                 console.log('Started changing password')
-                let getIdResponse = await this.send('GET', `/getid`, {
+                // let getIdResponse = await this.send('POST', `/getid`, {
+                //     sessionId: this.sessionId
+                // });
+                // if (getIdResponse.ok) {
+                //     this.email = getIdResponse.body.email
+                // } else {
+                //     console.log('Failed to get id:', getIdResponse);
+                // }
+                //
+                // // Make the password change request
+                // let passChangeResponse = await this.send('PUT', `/passchange`, {
+                //     newPass1: this.newPass1,
+                //     newPass2: this.newPass2,
+                //     curPass: this.curPass,
+                //     email: this.email
+                // });
+                //
+                // if (passChangeResponse.ok) {
+                var myModal = new bootstrap.Modal(document.getElementById('passChangeModal'), {
+                    keyboard: false
+                })
+                myModal.hide()
+                //     console.log("Password changed successfully!");
+                // } else {
+                //     console.log('Failed to change password:', passChangeResponse);
+                // }
+                //
+                // return false;
+            },
+            changeEmailClick: async function () {
+                // change the password after getting 2 new passwords and the current password
+                console.log('Started changing email')
+                let getIdResponse = await this.send('POST', `/getid`, {
                     sessionId: this.sessionId
                 });
                 if (getIdResponse.ok) {
@@ -179,22 +254,22 @@
                 }
 
                 // Make the password change request
-                let passChangeResponse = await this.send('PUT', `/passchange`, {
-                    newPass1: this.newPass1,
-                    newPass2: this.newPass2,
-                    curPass: this.curPass,
-                    email: this.email
+                let emailChangeResponse = await this.send('PUT', `/emailchange`, {
+                    newEmail1: this.newEmail1,
+                    newEmail2: this.newEmail2,
+                    email: this.email,
+                    curPass: this.curPass
                 });
 
-                if (passChangeResponse.ok) {
-                    this.modalHandler = new bootstrap.Modal(document.getElementById('passChangeModal'), {});
+                if (emailChangeResponse.ok) {
+                    this.modalHandler = new bootstrap.Modal(document.getElementById('emailChangeModal'), {});
                     this.modalHandler.hide();
-                    alert("Password changed successfully!");
+                    alert("Email changed successfully!");
                 } else {
-                    console.log('Failed to change password:', passChangeResponse);
+                    console.log('Email to change password:', emailChangeResponse);
                 }
 
-            return false;
+                return false;
             },
 
             onWindowLoad: async function () {
@@ -205,8 +280,7 @@
                     this.email = response.body.email
                     console.log(this.email)
                     console.log("Page loaded successfully");
-                }
-                else if (response.status === 404) {
+                } else if (response.status === 404) {
                     window.location.href = "/"
                 };
                 return false

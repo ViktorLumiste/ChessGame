@@ -124,7 +124,8 @@ app.put('/passchange', (req, res) => {
     console.log(email, curPass, newPass1, newPass2)
     con.query(`select *
                from logininfo
-               where password = '${curPass}' and  email = '${email}'`, function (err, result, fields) {
+               where password = '${curPass}'
+                 and email = '${email}'`, function (err, result, fields) {
         if (err) throw err;
         if (result.length > 0) {
             res.status(401).send('Incorrect current password. Please try again.');
@@ -144,6 +145,41 @@ app.put('/passchange', (req, res) => {
             }
         }
     })
+});
+app.put('/emailchange', (req, res) => {
+    const email = req.body.email;
+    const newEmail1 = req.body.newEmail1
+    const newEmail2 = req.body.newEmail2
+    const curPass = req.body.password
+
+    console.log(curPass, email, newEmail1, newEmail2)
+
+    con.query(`select *
+               from logininfo
+               where password = '${curPass}'
+                 and email = '${email}'`, function (err, result, fields) {
+        if (err) throw err;
+        if (result.length > 0) {
+            res.status(401).send('Incorrect password or current email. Please try again.');
+        } else {
+            con.query(`select email
+                       from logininfo
+                       where email like '${newEmail1}'`, function (err, result, fields) {
+                if (result.length === 0 && newEmail1 === newEmail2) {
+                    con.query(`update logininfo
+                               set email = '${newEmail1}'
+                               where email = '${email}'`, function (err, result, fields) {
+                        if (err) throw err;
+                        res.status(201).send('Email changed');
+                    });
+                } else {
+                    res.status(400).send('New emails do not match');
+                }
+            })
+        }
+    })
+
+
 });
 // Profile page reroute
 app.get('/account', (req, res) => {
