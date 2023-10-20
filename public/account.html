@@ -24,6 +24,9 @@
             border: 1px solid #ddd;
             border-radius: 5px;
         }
+        .btn{
+            margin-right:10px
+        }
 
         .profile h2 {
             text-align: center;
@@ -61,6 +64,10 @@
                 data-bs-target="#passChangeModal">
             Change Password
         </button>
+        <button type="submit" class="btn btn-primary" data-bs-dismiss="modal" data-bs-toggle="modal"
+                data-bs-target="#emailChangeModal">
+            Change Email
+        </button>
     </div>
 
     <div class="modal fade" id="passChangeModal" tabindex="-1" aria-labelledby="passChangeModalLabel"
@@ -89,7 +96,7 @@
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                            <button type="submit" class="btn btn-primary" form="passChange">
+                            <button type="submit" class="btn btn-primary" data-bs-dismiss="modal">
                                 Change Password
                             </button>
                         </div>
@@ -212,34 +219,33 @@
             changePassClick: async function () {
                 // change the password after getting 2 new passwords and the current password
                 console.log('Started changing password')
-                // let getIdResponse = await this.send('POST', `/getid`, {
-                //     sessionId: this.sessionId
-                // });
-                // if (getIdResponse.ok) {
-                //     this.email = getIdResponse.body.email
-                // } else {
-                //     console.log('Failed to get id:', getIdResponse);
-                // }
-                //
-                // // Make the password change request
-                // let passChangeResponse = await this.send('PUT', `/passchange`, {
-                //     newPass1: this.newPass1,
-                //     newPass2: this.newPass2,
-                //     curPass: this.curPass,
-                //     email: this.email
-                // });
-                //
-                // if (passChangeResponse.ok) {
-                var myModal = new bootstrap.Modal(document.getElementById('passChangeModal'), {
-                    keyboard: false
-                })
-                myModal.hide()
-                //     console.log("Password changed successfully!");
-                // } else {
-                //     console.log('Failed to change password:', passChangeResponse);
-                // }
-                //
-                // return false;
+                let getIdResponse = await this.send('POST', `/getid`, {
+                    sessionId: this.sessionId
+                });
+                if (getIdResponse.ok) {
+                    this.email = getIdResponse.body.email
+                } else {
+                    console.log('Failed to get id:', getIdResponse);
+                }
+
+                if (newEmail1 === newEmail2 && newEmail1 != null){
+                // Make the password change request
+                let passChangeResponse = await this.send('PUT', `/passchange`, {
+                    newPass1: this.newPass1,
+                    newPass2: this.newPass2,
+                    curPass: this.curPass,
+                    email: this.email
+                });
+
+                if (passChangeResponse.ok) {
+                    console.log("Password changed successfully!");
+                } else {
+                    console.log('Failed to change password:', passChangeResponse);
+                }
+                } else {
+                    alert('Please enter a valid new password!')
+                }
+                return false;
             },
             changeEmailClick: async function () {
                 // change the password after getting 2 new passwords and the current password
@@ -254,6 +260,9 @@
                 }
 
                 // Make the password change request
+                if (newEmail1 === newEmail2 && newEmail1 != null){
+
+
                 let emailChangeResponse = await this.send('PUT', `/emailchange`, {
                     newEmail1: this.newEmail1,
                     newEmail2: this.newEmail2,
@@ -261,12 +270,16 @@
                     curPass: this.curPass
                 });
 
+
                 if (emailChangeResponse.ok) {
                     this.modalHandler = new bootstrap.Modal(document.getElementById('emailChangeModal'), {});
                     this.modalHandler.hide();
                     alert("Email changed successfully!");
                 } else {
                     console.log('Email to change password:', emailChangeResponse);
+                }
+                } else {
+                    alert('Please enter a valid new email!')
                 }
 
                 return false;
@@ -282,7 +295,7 @@
                     console.log("Page loaded successfully");
                 } else if (response.status === 404) {
                     window.location.href = "/"
-                };
+                }
                 return false
             },
             signOut() {
