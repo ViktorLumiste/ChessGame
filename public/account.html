@@ -9,7 +9,6 @@
           integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
 
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.3/css/all.css" crossorigin="anonymous">
-
     <title>Account page</title>
     <style>
         body {
@@ -25,7 +24,11 @@
             border-radius: 5px;
         }
         .btn{
+            margin-top:10px;
             margin-right:10px
+        }
+        #killBtn{
+            background-color: #f44336;
         }
 
         .profile h2 {
@@ -67,6 +70,10 @@
         <button type="submit" class="btn btn-primary" data-bs-dismiss="modal" data-bs-toggle="modal"
                 data-bs-target="#emailChangeModal">
             Change Email
+        </button>
+        <button type="submit" id="killBtn" class="btn btn-primary" data-bs-dismiss="modal" data-bs-toggle="modal"
+                data-bs-target="#killModal">
+            💀Deactivate Account💀
         </button>
     </div>
 
@@ -138,12 +145,44 @@
             </div>
         </div>
     </div>
+    <div class="modal fade" id="killModal" tabindex="-1" aria-labelledby="killModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="killModalLabel">Change email</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form @submit.prevent="killClick" id="kill">
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="curPass" class="form-label">Enter your email address</label>
+                            <input type="password" class="form-control" id="curPass" v-model="curPass">
+                        </div>
+                        <div class="mb-3">
+                            <label for="newEmail1" class="form-label">Enter your password</label>
+                            <input type="email" class="form-control" id="newEmail1" v-model="newEmail1">
+                        </div>
+                        <div class="mb-3">
+                            <label for="newEmail2" class="form-label">Repeat your password</label>
+                            <input type="email" class="form-control" id="newEmail2" v-model="newEmail2">
+                        </div>
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary" form="emailChange">
+                            Change Email
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
 </div>
 <script type='text/javascript' src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-
-
 <script>
-
     const {createApp} = Vue
 
     function tryToParseJSON(jsonString) {
@@ -167,6 +206,9 @@
                 newPass2: null,
                 newEmail1: null,
                 newEmail2: null,
+                killEmail: null,
+                killPass: null,
+                killPass1: null,
                 sessionId: localStorage.getItem('sessionId')
             }
         },
@@ -284,7 +326,18 @@
 
                 return false;
             },
+            killClick: async function(){
+                console.log('Started killing account')
+                let getIdResponse = await this.send('POST', `/getid`, {
+                    sessionId: this.sessionId
+                });
+                if (getIdResponse.ok) {
+                    this.email = getIdResponse.body.email
+                } else {
+                    console.log('Failed to get id:', getIdResponse);
+                }
 
+            },
             onWindowLoad: async function () {
                 let response = await this.send('POST', `/getid`, {
                     sessionId: this.sessionId,
