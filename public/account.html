@@ -150,29 +150,29 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="killModalLabel">Change email</h5>
+                    <h5 class="modal-title" id="killModalLabel">Delete your account</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <form @submit.prevent="killClick" id="kill">
                     <div class="modal-body">
                         <div class="mb-3">
                             <label for="curPass" class="form-label">Enter your email address</label>
-                            <input type="password" class="form-control" id="curPass" v-model="curPass">
+                            <input type="email" class="form-control" id="curPass" v-model="killEmail">
                         </div>
                         <div class="mb-3">
                             <label for="newEmail1" class="form-label">Enter your password</label>
-                            <input type="email" class="form-control" id="newEmail1" v-model="newEmail1">
+                            <input type="password" class="form-control" id="newEmail1" v-model="killPass">
                         </div>
                         <div class="mb-3">
                             <label for="newEmail2" class="form-label">Repeat your password</label>
-                            <input type="email" class="form-control" id="newEmail2" v-model="newEmail2">
+                            <input type="password" class="form-control" id="newEmail2" v-model="killPass1">
                         </div>
 
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-primary" form="emailChange">
-                            Change Email
+                        <button type="submit" id="killBtn" class="btn btn-primary">
+                            Delete account
                         </button>
                     </div>
                 </form>
@@ -266,28 +266,29 @@
                 });
                 if (getIdResponse.ok) {
                     this.email = getIdResponse.body.email
+                    if (newEmail1 === newEmail2 && newEmail1 != null){
+                        // Make the password change request
+                        let passChangeResponse = await this.send('PUT', `/passchange`, {
+                            newPass1: this.newPass1,
+                            newPass2: this.newPass2,
+                            curPass: this.curPass,
+                            email: this.email
+                        });
+
+                        if (passChangeResponse.ok) {
+                            console.log("Password changed successfully!");
+                        } else {
+                            console.log('Failed to change password:', passChangeResponse);
+                        }
+                    } else {
+                        alert('Please enter a valid new password!')
+                    }
+                    return false;
                 } else {
                     console.log('Failed to get id:', getIdResponse);
                 }
 
-                if (newEmail1 === newEmail2 && newEmail1 != null){
-                // Make the password change request
-                let passChangeResponse = await this.send('PUT', `/passchange`, {
-                    newPass1: this.newPass1,
-                    newPass2: this.newPass2,
-                    curPass: this.curPass,
-                    email: this.email
-                });
 
-                if (passChangeResponse.ok) {
-                    console.log("Password changed successfully!");
-                } else {
-                    console.log('Failed to change password:', passChangeResponse);
-                }
-                } else {
-                    alert('Please enter a valid new password!')
-                }
-                return false;
             },
             changeEmailClick: async function () {
                 // change the password after getting 2 new passwords and the current password
@@ -297,34 +298,35 @@
                 });
                 if (getIdResponse.ok) {
                     this.email = getIdResponse.body.email
+
+
+                    // Make the password change request
+                    if (newEmail1 === newEmail2 && newEmail1 != null){
+
+
+                        let emailChangeResponse = await this.send('PUT', `/emailchange`, {
+                            newEmail1: this.newEmail1,
+                            newEmail2: this.newEmail2,
+                            email: this.email,
+                            curPass: this.curPass
+                        });
+
+
+                        if (emailChangeResponse.ok) {
+                            this.modalHandler = new bootstrap.Modal(document.getElementById('emailChangeModal'), {});
+                            this.modalHandler.hide();
+                            alert("Email changed successfully!");
+                        } else {
+                            console.log('Email to change password:', emailChangeResponse);
+                        }
+                    } else {
+                        alert('Please enter a valid new email!')
+                    }
+
+                    return false;
                 } else {
                     console.log('Failed to get id:', getIdResponse);
                 }
-
-                // Make the password change request
-                if (newEmail1 === newEmail2 && newEmail1 != null){
-
-
-                let emailChangeResponse = await this.send('PUT', `/emailchange`, {
-                    newEmail1: this.newEmail1,
-                    newEmail2: this.newEmail2,
-                    email: this.email,
-                    curPass: this.curPass
-                });
-
-
-                if (emailChangeResponse.ok) {
-                    this.modalHandler = new bootstrap.Modal(document.getElementById('emailChangeModal'), {});
-                    this.modalHandler.hide();
-                    alert("Email changed successfully!");
-                } else {
-                    console.log('Email to change password:', emailChangeResponse);
-                }
-                } else {
-                    alert('Please enter a valid new email!')
-                }
-
-                return false;
             },
             killClick: async function(){
                 console.log('Started killing account')
@@ -333,6 +335,29 @@
                 });
                 if (getIdResponse.ok) {
                     this.email = getIdResponse.body.email
+                    if (this.killEmail === this.email && this.killPass === this.killPass1){
+                            // Make the password change confirmation request
+                            if(confirm('Are you sure you want to delete your account?')){
+                                // Make the password change request
+                                let killResponse = await this.send('DELETE', `/kill`, {
+                                    email: this.killEmail,
+                                    password: this.killPass
+                                });
+                                if (killResponse.ok) {
+                                    console.log("Account deleted successfully!");
+                                    alert('User deleted. Goodbye.')
+                                    localStorage.setItem('sessionId', null); // Set sessionId in localStorage to null
+                                    window.location.href = "/"; // Redirect the user to the index page
+                                } else {
+                                    console.log('Failed to delete account:', killResponse)
+                                }
+                            }else {
+                                alert('Account deletion cancelled');
+                                console.log("Account deletion cancelled");
+                            }
+                    } else {
+                        alert('Please check your credentials!')
+                    }
                 } else {
                     console.log('Failed to get id:', getIdResponse);
                 }
@@ -352,7 +377,7 @@
                 return false
             },
             signOut() {
-                localStorage.setItem('sessionid', null); // Set sessionId in localStorage to null
+                localStorage.setItem('sessionId', null); // Set sessionId in localStorage to null
                 window.location.href = "/"; // Redirect the user to the index page
             },
         }

@@ -181,6 +181,30 @@ app.put('/emailchange', (req, res) => {
 
 
 });
+app.delete('/kill', (req, res) => {
+    const email = req.body.email;
+    const password = req.body.password;
+    con.query(`select *
+               from logininfo
+               where email = '${email}'`, function (err, result, fields) {
+        if (err) throw err;
+        if (result.length > 0) {
+            bcrypt.compare(password, result[0].password, function (err, result) {
+                if (result) {
+                    con.query(`delete from logininfo
+                       where email = '${email}'`, function (err, result, fields) {
+                        if (err) throw err;
+                        res.status(200).send('User deleted');
+                    });
+                } else {
+                    res.status(401).send('Incorrect password. Please try again.');
+                }
+            });
+        } else {
+            res.status(401).send('Incorrect email. Please try again.');
+        }
+    })
+});
 // Profile page reroute
 app.get('/account', (req, res) => {
     res.sendFile(__dirname + '/public/account.html');
