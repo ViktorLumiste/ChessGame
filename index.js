@@ -218,6 +218,9 @@ app.delete('/kill', (req, res) => {
 app.get('/account', (req, res) => {
     res.sendFile(__dirname + '/public/account.html');
 })
+app.get('/menu', (req, res) => {
+    res.sendFile(__dirname + '/public/menu.html');
+})
 app.listen(port, () => {
     console.log(`App running. Docs at http://localhost:${port}`);
 })

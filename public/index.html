@@ -191,7 +191,7 @@
                     if (response.ok) {
                         this.sessionId = response.body.sessionId;
                         localStorage.setItem("sessionId", this.sessionId);
-                        window.location.assign('account');
+                        window.location.assign('menu');
                     };
                     this.isAdmin = response.body.isAdmin;
 

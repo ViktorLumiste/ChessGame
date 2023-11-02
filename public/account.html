@@ -13,6 +13,7 @@
     <style>
         body {
             font-family: Arial, sans-serif;
+            overflow: hidden; /* Hide horizontal scroll bar */
         }
 
         .profile {
@@ -23,15 +24,94 @@
             border: 1px solid #ddd;
             border-radius: 5px;
         }
-        .btn{
-            margin-top:10px;
-            margin-right:10px
+
+        .menu {
+            position: fixed;
+            top: 0;
+            left: -230px;
+            width: 290px;
+            height: 100%;
+            background-color: #333;
+            padding: 20px;
+            color: #fff;
+            transition: left 0.3s;
         }
-        #killBtn{
+
+        .menu.active {
+            left: 0;
+        }
+
+        .menu h2 {
+            font-family: Arial, sans-serif; /* Specify the desired font-family */
+            font-size: 1.5em;
+            margin-right: 28px;
+            text-align: center;
+        }
+
+
+        .menu .options a {
+            display: flex;
+            text-decoration: none;
+            align-items: center;
+            color: #fff;
+            width: 200px;
+            margin-left:10px;
+            padding: 10px 0;
+            justify-content: center
+        }
+
+        .menu .options a:hover {
+            background-color: #555;
+        }
+
+        .menu-toggle {
+            margin-left: 25px;
+            position: absolute;
+            top: 16px;
+            left: 220px;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .fade-content {
+            transition: opacity 0.3s;
+            opacity: 1;
+            position: absolute;
+            left: 250px;
+            right: 0;
+            top: 0;
+            bottom: 0;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5); /* Dark overlay background */
+            display: none;
+            pointer-events: none;
+            transition: opacity 0.3s;
+            opacity: 0; /* Initially transparent */
+        }
+
+        .menu.active + .overlay + .fade-content {
+            opacity: 0.1; /* Adjust the opacity to control the level of fading for the content and overlay */
+            pointer-events: none;
+        }
+
+        .btn {
+            margin-top: 10px;
+            margin-right: 10px
+        }
+
+        #killBtn {
             background-color: #f44336;
         }
 
         .profile h2 {
+            left:20px;
             text-align: center;
         }
 
@@ -54,7 +134,21 @@
     </style>
 </head>
 <body>
-<div id="app">
+<div class="menu" id="sideMenu">
+    <div class="menu-toggle" id="menuToggle">
+        <i class="fas fa-bars fa-lg"></i>
+    </div>
+    <h2>Menu</h2>
+    <div class="options">
+        <a href="/menu">Play</a>
+        <a href="/account">Account Page</a>
+        <a href="/leaderboard">Leaderboard</a>
+    </div>
+</div>
+
+<div class="overlay" id="overlay"></div>
+
+<div class="fade-content" id="app">
     <div class="profile">
         <h2>Player Profile</h2>
         <img src="profile_picture.jpg" alt="Profile Picture">
@@ -85,29 +179,29 @@
                     <h5 class="modal-title" id="passChangeModalLabel">Change password</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                    <form @submit.prevent="changePassClick" id="passChange">
-                        <div class="modal-body">
-                            <div class="mb-3">
-                                <label for="curPass" class="form-label">Enter your current password</label>
-                                <input type="password" class="form-control" id="curPass" v-model="curPass">
-                            </div>
-                            <div class="mb-3">
-                                <label for="newPass1" class="form-label">New password</label>
-                                <input type="password" class="form-control" id="newPass1" v-model="newPass1">
-                            </div>
-                            <div class="mb-3">
-                                <label for="newPass2" class="form-label">Repeat the new password</label>
-                                <input type="password" class="form-control" id="newPass2" v-model="newPass2">
-                            </div>
+                <form @submit.prevent="changePassClick" id="passChange">
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="curPass" class="form-label">Enter your current password</label>
+                            <input type="password" class="form-control" id="curPass" v-model="curPass">
+                        </div>
+                        <div class="mb-3">
+                            <label for="newPass1" class="form-label">New password</label>
+                            <input type="password" class="form-control" id="newPass1" v-model="newPass1">
+                        </div>
+                        <div class="mb-3">
+                            <label for="newPass2" class="form-label">Repeat the new password</label>
+                            <input type="password" class="form-control" id="newPass2" v-model="newPass2">
+                        </div>
 
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                            <button type="submit" class="btn btn-primary" data-bs-dismiss="modal">
-                                Change Password
-                            </button>
-                        </div>
-                    </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary" data-bs-dismiss="modal">
+                            Change Password
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -119,29 +213,29 @@
                     <h5 class="modal-title" id="emailChangeModalLabel">Change email</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                    <form @submit.prevent="changeEmailClick" id="emailChange">
-                        <div class="modal-body">
-                            <div class="mb-3">
-                                <label for="curPass" class="form-label">Enter your current password</label>
-                                <input type="password" class="form-control" id="curPass" v-model="curPass">
-                            </div>
-                            <div class="mb-3">
-                                <label for="newEmail1" class="form-label">New email</label>
-                                <input type="email" class="form-control" id="newEmail1" v-model="newEmail1">
-                            </div>
-                            <div class="mb-3">
-                                <label for="newEmail2" class="form-label">Repeat the new email</label>
-                                <input type="email" class="form-control" id="newEmail2" v-model="newEmail2">
-                            </div>
+                <form @submit.prevent="changeEmailClick" id="emailChange">
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="curPass" class="form-label">Enter your current password</label>
+                            <input type="password" class="form-control" id="curPass" v-model="curPass">
+                        </div>
+                        <div class="mb-3">
+                            <label for="newEmail1" class="form-label">New email</label>
+                            <input type="email" class="form-control" id="newEmail1" v-model="newEmail1">
+                        </div>
+                        <div class="mb-3">
+                            <label for="newEmail2" class="form-label">Repeat the new email</label>
+                            <input type="email" class="form-control" id="newEmail2" v-model="newEmail2">
+                        </div>
 
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                            <button type="submit" class="btn btn-primary" form="emailChange">
-                                Change Email
-                            </button>
-                        </div>
-                    </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary" form="emailChange">
+                            Change Email
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -181,8 +275,19 @@
     </div>
 
 </div>
+<div class="overlay" id="overlay"></div>
 <script type='text/javascript' src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
 <script>
+    const menuToggle = document.getElementById("menuToggle");
+    const sideMenu = document.getElementById("sideMenu");
+    const overlay = document.getElementById("overlay");
+
+    menuToggle.addEventListener("click", () => {
+        sideMenu.classList.toggle("active");
+        overlay.style.display = sideMenu.classList.contains("active") ? "block" : "none";
+    });
+
+
     const {createApp} = Vue
 
     function tryToParseJSON(jsonString) {
@@ -266,7 +371,7 @@
                 });
                 if (getIdResponse.ok) {
                     this.email = getIdResponse.body.email
-                    if (newEmail1 === newEmail2 && newEmail1 != null){
+                    if (newEmail1 === newEmail2 && newEmail1 != null) {
                         // Make the password change request
                         let passChangeResponse = await this.send('PUT', `/passchange`, {
                             newPass1: this.newPass1,
@@ -301,7 +406,7 @@
 
 
                     // Make the password change request
-                    if (newEmail1 === newEmail2 && newEmail1 != null){
+                    if (newEmail1 === newEmail2 && newEmail1 != null) {
 
 
                         let emailChangeResponse = await this.send('PUT', `/emailchange`, {
@@ -328,33 +433,33 @@
                     console.log('Failed to get id:', getIdResponse);
                 }
             },
-            killClick: async function(){
+            killClick: async function () {
                 console.log('Started killing account')
                 let getIdResponse = await this.send('POST', `/getid`, {
                     sessionId: this.sessionId
                 });
                 if (getIdResponse.ok) {
                     this.email = getIdResponse.body.email
-                    if (this.killEmail === this.email && this.killPass === this.killPass1){
-                            // Make the password change confirmation request
-                            if(confirm('Are you sure you want to delete your account?')){
-                                // Make the password change request
-                                let killResponse = await this.send('DELETE', `/kill`, {
-                                    email: this.killEmail,
-                                    password: this.killPass
-                                });
-                                if (killResponse.ok) {
-                                    console.log("Account deleted successfully!");
-                                    alert('User deleted. Goodbye.')
-                                    localStorage.setItem('sessionId', null); // Set sessionId in localStorage to null
-                                    window.location.href = "/"; // Redirect the user to the index page
-                                } else {
-                                    console.log('Failed to delete account:', killResponse)
-                                }
-                            }else {
-                                alert('Account deletion cancelled');
-                                console.log("Account deletion cancelled");
+                    if (this.killEmail === this.email && this.killPass === this.killPass1) {
+                        // Make the password change confirmation request
+                        if (confirm('Are you sure you want to delete your account?')) {
+                            // Make the password change request
+                            let killResponse = await this.send('DELETE', `/kill`, {
+                                email: this.killEmail,
+                                password: this.killPass
+                            });
+                            if (killResponse.ok) {
+                                console.log("Account deleted successfully!");
+                                alert('User deleted. Goodbye.')
+                                localStorage.setItem('sessionId', null); // Set sessionId in localStorage to null
+                                window.location.href = "/"; // Redirect the user to the index page
+                            } else {
+                                console.log('Failed to delete account:', killResponse)
                             }
+                        } else {
+                            alert('Account deletion cancelled');
+                            console.log("Account deletion cancelled");
+                        }
                     } else {
                         alert('Please check your credentials!')
                     }
