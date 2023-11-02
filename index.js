@@ -4,7 +4,7 @@ const swaggerUi = require('swagger-ui-express');
 const yamlJs = require('yamljs');
 const swaggerDocument = yamlJs.load('./swagger.yaml');
 var mysql = require('mysql');
-
+const swaggerJsdoc = require('swagger-jsdoc');
 const port = process.env.PORT || 3000;
 // Import bcrypt for password encryption
 const bcrypt = require('bcrypt');
@@ -26,8 +26,17 @@ var con = mysql.createConnection({
     password: "qwerty",
     database: "logins"
 });
-
-require('dotenv').config();
+const options = {
+    swaggerDefinition: {
+        info: {
+            title: 'Chess game',
+            version: '1.0.0',
+            description: 'API documentation for your service',
+        },
+        basePath: '/',
+    },
+    apis: ['index.js'], // Replace with the path to your API definition file
+};
 // Create a user
 app.post('/signin', (req, res) => {
     // Get email and password from request body

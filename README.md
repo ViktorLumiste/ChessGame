@@ -43,4 +43,11 @@ This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md
 - [NPM](https://www.npmjs.com/) for the package manager.
 - [Dotenv](https://www.npmjs.com/package/dotenv) for the environment variables.
 - [Bcrypt](https://www.npmjs.com/package/bcrypt) for the password hashing.
--
+- [MySQL](https://www.npmjs.com/package/mysql) for the database connection.
+- [Nodemon](https://www.npmjs.com/package/nodemon) for the development server.
+- [Jest](https://www.npmjs.com/package/jest) for the testing framework.
+- [VUE](https://vuejs.org/) for the frontend framework.
+- [Bootstrap](https://getbootstrap.com/) for the CSS framework.
+- [Font Awesome](https://fontawesome.com/) for the icons.
+- [swagger-jsdoc](https://www.npmjs.com/package/swagger-jsdoc) for the API documentation.
+- [swagger-ui-express](https://www.npmjs.com/package/swagger-ui-express) for the API documentation. 

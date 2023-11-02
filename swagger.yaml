@@ -1,5 +1,153 @@
-openapi: 3.0.2
+openapi: 3.0.0
 info:
-  title: ITA21
+  title: Chess Game API
   version: 1.0.0
-  description: Demonstration API
+  description: API documentation for your service
+servers:
+  - url: http://localhost:3000
+paths:
+  /signin:
+    post:
+      summary: Log in a user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          description: User logged in
+        '401':
+          description: Incorrect password
+        '404':
+          description: User not found
+  /makeid:
+    post:
+      summary: Get a user's session ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          description: Session ID retrieved
+        '404':
+          description: User not found
+  /getid:
+    post:
+      summary: Get user email by session ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                sessionId:
+                  type: string
+      responses:
+        '200':
+          description: User email retrieved
+        '404':
+          description: Session not found
+  /userreg:
+    post:
+      summary: Register a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '201':
+          description: User created
+        '400':
+          description: User already exists
+  /passchange:
+    put:
+      summary: Change user password
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                curPass:
+                  type: string
+                newPass1:
+                  type: string
+                newPass2:
+                  type: string
+      responses:
+        '201':
+          description: Password changed
+        '400':
+          description: New passwords do not match
+        '401':
+          description: Incorrect current password
+  /emailchange:
+    put:
+      summary: Change user email
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                newEmail1:
+                  type: string
+                newEmail2:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '201':
+          description: Email changed
+        '400':
+          description: New emails do not match
+        '401':
+          description: Incorrect password or current email
+  /kill:
+    delete:
+      summary: Delete a user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          description: User deleted
+        '401':
+          description: Incorrect email or password
