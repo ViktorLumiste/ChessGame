@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+          crossorigin="anonymous">
+    <!-- Font Awesome CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+          crossorigin="anonymous">
+    <!-- Chessboard CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css"
+          integrity="sha384-q94+BZtLrkL1/ohfjR8c6L+A6qzNH9R2hBLwyoAfu3i/WCvQjzL2RQJ3uNHDISdU" crossorigin="anonymous">
+    <link rel="stylesheet" href="css/chessboard-1.0.0.min.css">
+    <title>Chess Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            overflow: hidden; /* Hide horizontal scroll bar */
+        }
+
+        .btn {
+            margin-top: 10px;
+            margin-right: 10px
+        }
+
+        .menu {
+            position: fixed;
+            top: 0;
+            left: -230px;
+            width: 250px;
+            height: 100%;
+            background-color: #333;
+            padding: 20px;
+            color: #fff;
+            transition: left 0.3s;
+        }
+
+        .menu.active {
+            left: 0;
+        }
+
+        .menu h2 {
+            font-family: Arial, sans-serif; /* Specify the desired font-family */
+            margin-right: 28px;
+            text-align: center;
+        }
+
+
+        .menu .options a {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            color: #fff;
+            width: 200px;
+            margin-left: 10px;
+            padding: 10px 0;
+            justify-content: center
+        }
+
+        .menu .options a:hover {
+            background-color: #555;
+        }
+
+        .menu-toggle {
+            margin-left: 25px;
+            position: absolute;
+            top: 20px;
+            left: 220px;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .fade-content {
+            transition: opacity 0.3s;
+            opacity: 1;
+            position: absolute;
+            left: 250px;
+            right: 0;
+            top: 0;
+            bottom: 0;
+        }
+
+        .fade-content button {
+            background: #2ba6cb;
+            border-radius: 3px;
+            border: 1px solid #1e728c;
+            color: #fff;
+            cursor: pointer;
+            display: inline-block;
+            font-size: 14px;
+            font-weight: 600;
+            margin: 15px 5px 0 0;
+            outline: none;
+            padding: 10px 15px;
+            text-align: center;
+            text-decoration: none;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5); /* Dark overlay background */
+            display: none;
+            pointer-events: none;
+            transition: opacity 0.3s;
+            opacity: 0; /* Initially transparent */
+        }
+
+        .menu.active + .overlay + .fade-content {
+            opacity: 0.1; /* Adjust the opacity to control the level of fading for the content and overlay */
+            pointer-events: none;
+        }
+
+        .btn-custom {
+            background-color: #4CAF50; /* Change the background color to your preferred color */
+            color: white; /* Change the text color to white or another suitable color */
+            padding: 10px 20px; /* Adjust the padding as needed */
+            border: none; /* Remove the default button border */
+            border-radius: 5px; /* Add rounded corners */
+            cursor: pointer; /* Show a pointer cursor on hover */
+            font-size: 16px; /* Customize the font size */
+        }
+
+        .btn-custom:hover {
+            background-color: #45a049; /* Change the background color on hover */
+        }
+
+
+    </style>
+</head>
+<body>
+<div class="menu" id="sideMenu">
+    <div class="menu-toggle" id="menuToggle">
+        <i class="fas fa-bars fa-lg"></i>
+    </div>
+    <h2>Menu</h2>
+    <div class="options">
+        <a href="/menu">Play</a>
+        <a href="/account">Account Page</a>
+        <a href="/leaderboard">Leaderboard</a>
+    </div>
+</div>
+
+<div class="overlay" id="overlay"></div>
+
+<div class="fade-content" style="padding: 20px;">
+    <div id="myBoard" style="width: 400px"></div>
+        <div class="div-buttons">
+            <button id="startBtn">Start</button>
+            <label>Status:</label>
+            <div id="status"></div>
+        </div>
+</div>
+<script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+<script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
+<script type='text/javascript' src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        crossorigin="anonymous">
+</script>
+<script src="js/chessboard-1.0.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.2/chess.js"
+        integrity="sha384-s3XgLpvmHyscVpijnseAmye819Ee3yaGa8NxstkJVyA6nuDFjt59u1QvuEl/mecz"
+        crossorigin="anonymous"></script>
+<script>
+
+  var board = null
+  var game = new Chess()
+  var whiteSquareGrey = '#a9a9a9'
+  var blackSquareGrey = '#696969'
+  var $status = $('#status')
+  function removeGreySquares () {
+    $('#myBoard .square-55d63').css('background', '')
+  }
+  function greySquare (square) {
+    var $square = $('#myBoard .square-' + square)
+
+    var background = whiteSquareGrey
+    if ($square.hasClass('black-3c85d')) {
+      background = blackSquareGrey
+    }
+
+    $square.css('background', background)
+  }
+  function onDragStart (source, piece, position, orientation) {
+    // do not pick up pieces if the game is over
+    if (game.game_over()) return false
+
+    // only pick up pieces for the side to move
+    if ((game.turn() === 'w' && piece.search(/^b/) !== -1) ||
+      (game.turn() === 'b' && piece.search(/^w/) !== -1)) {
+      return false
+    }
+  }
+
+  function onDrop(source, target) {
+    removeGreySquares();
+    // see if the move is legal
+    var move = game.move({
+      from: source,
+      to: target,
+      promotion: 'q' // NOTE: always promote to a queen for example simplicity
+    });
+
+    // illegal move
+    if (move === null) return 'snapback';
+
+    // legal move, update status
+    updateStatus();
+  }
+  function onMouseoverSquare (square, piece) {
+    // get list of possible moves for this square
+    var moves = game.moves({
+      square: square,
+      verbose: true
+    })
+
+    // exit if there are no moves available for this square
+    if (moves.length === 0) return
+
+    // highlight the square they moused over
+    greySquare(square)
+
+    // highlight the possible squares for this piece
+    for (var i = 0; i < moves.length; i++) {
+      greySquare(moves[i].to)
+    }
+  }
+  function onMouseoutSquare (square, piece) {
+    removeGreySquares()
+  }
+
+  // update the board position after the piece snap
+  // for castling, en passant, pawn promotion
+  function onSnapEnd () {
+    board.position(game.fen())
+  }
+
+  function updateStatus () {
+    var status = ''
+
+    var moveColor = 'White'
+    if (game.turn() === 'b') {
+      moveColor = 'Black'
+    }
+
+    // checkmate?
+    if (game.in_checkmate()) {
+      status = 'Game over, ' + moveColor + ' is in checkmate.'
+      onGameOver(); // Call onGameOver when checkmate occurs
+    }
+
+    // draw?
+    else if (game.in_draw()) {
+      status = 'Game over, drawn position'
+      onGameOver(); // Call onGameOver when the game is drawn
+    }
+
+    // game still on
+    else {
+      status = moveColor + ' to move'
+
+      // check?
+      if (game.in_check()) {
+        status += ', ' + moveColor + ' is in check'
+      }
+    }
+
+    $status.html(status)
+  }
+
+
+  var config = {
+    draggable: true,
+    position: 'start',
+    onDragStart: onDragStart,
+    onDrop: onDrop,
+    onMouseoutSquare: onMouseoutSquare,
+    onMouseoverSquare: onMouseoverSquare,
+    onSnapEnd: onSnapEnd
+  }
+  board = Chessboard('myBoard', config)
+  $('#startBtn').on('click', function() {
+    board.start();
+    game = new Chess();
+    updateStatus();
+  });
+
+  updateStatus()
+</script>
+<script>
+
+  const menuToggle = document.getElementById('menuToggle')
+  const sideMenu = document.getElementById('sideMenu')
+  const overlay = document.getElementById('overlay')
+
+  menuToggle.addEventListener('click', () => {
+    sideMenu.classList.toggle('active')
+    overlay.style.display = sideMenu.classList.contains('active') ? 'block' : 'none'
+  })
+  const { createApp } = Vue
+
+  function tryToParseJSON (jsonString) {
+    try {
+      let o = JSON.parse(jsonString)
+      if (o && typeof o === 'object') {
+        return o
+      }
+    } catch (e) {
+    }
+    return ''
+  }
+
+  createApp({
+    data () {
+      return {
+        sessionId: localStorage.getItem('sessionId')
+      }
+    },
+    mounted () {
+      window.addEventListener('load', () => this.onWindowLoad())
+    },
+    methods: {
+      send: function (method, url, body) {
+        const vue = this
+
+        async function CheckError (response) {
+          if (response.status >= 200 && response.status <= 299) {
+            let responseText = await response.text()
+            return { ok: true, status: response.status, body: tryToParseJSON(responseText) }
+          } else {
+            let responseText = await response.text()
+            let responseObject = tryToParseJSON(responseText)
+            if (typeof responseObject === 'object' && typeof responseObject.error === 'string') {
+              if (response.status === 401 && responseObject.error === 'Invalid token') {
+                vue.clearStorageAndToggleLoginButtons()
+              } else if (response.status === 401 && responseObject.error === 'You have to login') {
+                vue.clearStorageAndToggleLoginButtons()
+              }
+              alert('Error code ' + response.status + ':\n' + responseObject.error)
+            } else {
+              alert('Error code ' + response.status + ':\n' + responseText)
+            }
+            return { ok: false, status: response.status, body: responseObject || responseText }
+          }
+        }
+
+        const headers = {
+          'Content-Type': 'application/json'
+        }
+        if (this.sessionId) {
+          headers.Authorization = 'Bearer ' + this.sessionId
+        }
+        return fetch(url, {
+          method: method,
+          headers,
+          body: JSON.stringify(body)
+        })
+          .then(CheckError)
+          .then((jsonResponse) => {
+            return jsonResponse
+          }).catch((error) => {
+            throw Error('Network error: ' + error)
+          })
+      },
+      onWindowLoad: async function () {
+        let response = await this.send('POST', `/getid`, {
+          sessionId: this.sessionId,
+        })
+        if (response.ok) {
+          this.email = response.body.email
+          console.log(this.email)
+          console.log('Page loaded successfully')
+        } else if (response.status === 404) {
+          window.location.href = '/'
+        }
+        return false
+      }
+    }
+  }).mount('#app')
+</script>
+</body>
+</html>

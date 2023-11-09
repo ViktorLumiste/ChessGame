@@ -221,6 +221,12 @@ app.get('/account', (req, res) => {
 app.get('/menu', (req, res) => {
     res.sendFile(__dirname + '/public/menu.html');
 })
+app.get('/ongame', (req, res) => {
+    res.sendFile(__dirname + '/public/ongame.html');
+})
+app.get('/offgame', (req, res) => {
+    res.sendFile(__dirname + '/public/offgame.html');
+})
 app.listen(port, () => {
     console.log(`App running. Docs at http://localhost:${port}`);
 })
