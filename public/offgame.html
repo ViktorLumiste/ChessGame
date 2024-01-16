@@ -29,7 +29,7 @@
             position: fixed;
             top: 0;
             left: -230px;
-            width: 250px;
+            width: 290px;
             height: 100%;
             background-color: #333;
             padding: 20px;
@@ -66,7 +66,7 @@
         .menu-toggle {
             margin-left: 25px;
             position: absolute;
-            top: 20px;
+            top: 17px;
             left: 220px;
             font-size: 20px;
             cursor: pointer;
@@ -149,9 +149,9 @@
 <div class="overlay" id="overlay"></div>
 
 <div class="fade-content" style="padding: 20px;">
-    <div id="myBoard" style="width: 400px"></div>
+    <div id="myBoard" style="width: auto;margin-bottom: 80px"></div>
         <div class="div-buttons">
-            <button id="startBtn">Start</button>
+            <button id="startBtn">Restart</button>
             <label>Status:</label>
             <div id="status"></div>
         </div>
@@ -195,6 +195,23 @@
       (game.turn() === 'b' && piece.search(/^w/) !== -1)) {
       return false
     }
+  }
+  function resizeChessboard() {
+      var windowWidth = $(window).width();
+      var windowHeight = $(window).height();
+      var padding = 200; // Adjust the padding as needed
+
+      // Calculate the size of the chessboard based on the window size
+      var boardSize = Math.min(windowWidth, windowHeight - padding);
+
+      // Set the size of the chessboard container
+      $('#myBoard').css({
+          width: boardSize + 'px',
+          height: boardSize + 'px'
+      });
+
+      // Redraw the chessboard
+      board.resize();
   }
 
   function onDrop(source, target) {
@@ -286,10 +303,11 @@
   board = Chessboard('myBoard', config)
   $('#startBtn').on('click', function() {
     board.start();
+    resizeChessboard();
     game = new Chess();
     updateStatus();
   });
-
+  $(window).resize(resizeChessboard);
   updateStatus()
 </script>
 <script>
